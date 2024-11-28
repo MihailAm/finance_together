@@ -23,7 +23,7 @@ class Transaction(Base):
     type: Mapped[TransactionType] = mapped_column(SQLAlchemyEnum(TransactionType), nullable=False)
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=False)
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('category.id'), nullable=False)
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories.id'), nullable=False)
 
     account = relationship("Account", back_populates="transactions")
     user = relationship("UserProfile", back_populates="transactions")

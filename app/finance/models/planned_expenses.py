@@ -23,7 +23,7 @@ class PlannedExpenses(Base):
     type: Mapped[TransactionType] = mapped_column(SQLAlchemyEnum(TransactionType), nullable=False)
     group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('category.id'), nullable=False)
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories.id'), nullable=False)
 
     user = relationship("UserProfile", back_populates="planned_expenses")
     group = relationship("Group", back_populates="planned_expenses")

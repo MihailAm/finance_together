@@ -15,7 +15,7 @@ class RoleEnum(Enum):
 
 class GroupMember(Base):
     __tablename__ = "group_members"
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), primary_key=True)
     group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), primary_key=True)
     role: Mapped[str] = mapped_column(SQLEnum(RoleEnum), default=RoleEnum.MEMBER, nullable=False)
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
