@@ -11,4 +11,4 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
 
-    user = relationship("UserProfile", back_populates="category")
+    # user = relationship("UserProfile", back_populates="category")

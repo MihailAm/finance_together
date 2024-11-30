@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic.v1 import ConfigDict
 from pydantic_settings import BaseSettings
 
@@ -8,15 +10,16 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
     DB_DRIVER: str
-    CACHE_HOST: str
-    CACHE_PORT: int
-    CACHE_DB: int
-    JWT_SECRET_KEY: str
+
+    PRIVATE_KEY_PATH: Path
+    PUBLIC_KEY_PATH: Path
     JWT_ENCODE_ALGORITHM: str
+
     GOOGLE_CLIENT_ID: str
     GOOGLE_SECRET_KEY: str
     GOOGLE_REDIRECT_URI: str
     GOOGLE_TOKEN_URL: str
+
     YANDEX_CLIENT_ID: str
     YANDEX_SECRET_KEY: str
     YANDEX_REDIRECT_URI: str

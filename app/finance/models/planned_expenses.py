@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, validates, relationship
 from app.infrastructure.database import Base
 
 
-class TransactionType(str, Enum):
+class PlannedExpenseType(str, Enum):
     INCOME = "доход"
     EXPENSE = "расход"
 
@@ -20,13 +20,14 @@ class PlannedExpenses(Base):
     amount: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=True)
     dur_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
-    type: Mapped[TransactionType] = mapped_column(SQLAlchemyEnum(TransactionType), nullable=False)
+    type: Mapped[PlannedExpenseType] = mapped_column(SQLAlchemyEnum(PlannedExpenseType), nullable=False)
+
     group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories.id'), nullable=False)
 
-    user = relationship("UserProfile", back_populates="planned_expenses")
-    group = relationship("Group", back_populates="planned_expenses")
+    # user = relationship("UserProfile", back_populates="planned_expenses")
+    # group = relationship("Group", back_populates="planned_expenses")
 
     @validates("user_id", "group_id")
     def validate_user_or_group(self, key, value):

@@ -25,8 +25,9 @@ class Goal(Base):
     due_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     status: Mapped[GoalStatus] = mapped_column(SQLAlchemyEnum(GoalStatus), default=GoalStatus.ACTIVE, nullable=False)
+
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
     group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), nullable=True)
 
-    user = relationship("UserProfile", back_populates="goals")
-    group = relationship("Group", back_populates="goals")
+    # user = relationship("UserProfile", back_populates="goals")
+    # group = relationship("Group", back_populates="goals")
