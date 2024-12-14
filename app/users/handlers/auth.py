@@ -1,17 +1,19 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.util import await_only
 
-from app.dependecy import get_auth_service
+from app.dependecy import get_auth_service, get_request_user_id, get_user_repository, get_request_user_id_from_refresh
 from app.users.exception import UserNotFoundException, UserNotCorrectPasswordException
-from app.users.schema import UserLoginSchema, AuthJwtSchema
+from app.users.repository import UserRepository
+from app.users.schema import UserLoginSchema, AuthJwtSchema, UserCreateSchema
 from app.users.service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post(
-    '/login',
+    '/login/',
     response_model=UserLoginSchema)
 async def login(body: AuthJwtSchema,
                 auth_service: Annotated[AuthService, Depends(get_auth_service)]):
@@ -27,3 +29,19 @@ async def login(body: AuthJwtSchema,
             status_code=401,
             detail=e.detail
         )
+
+
+@router.post('/refresh/',
+             response_model=UserLoginSchema,
+             response_model_exclude_none=True)
+async def auth_refresh_jwt(auth_service: Annotated[AuthService, Depends(get_auth_service)],
+                     user_id: int = Depends(get_request_user_id_from_refresh)):
+    access_token = await auth_service.generate_access_token(user_id=user_id)
+    return UserLoginSchema(access_token=access_token)
+
+
+
+@router.get('tests', response_model=UserCreateSchema)
+async def test(user_rep: Annotated[UserRepository, Depends(get_user_repository)],
+               user_id: int = Depends(get_request_user_id)):
+    return await user_rep.get_user(user_id=user_id)

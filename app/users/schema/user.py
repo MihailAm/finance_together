@@ -1,10 +1,10 @@
-from pydantic import BaseModel, ConfigDict
-
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class UserLoginSchema(BaseModel):
-    user_id: int
     access_token: str
+    refresh_token: str | None = None
+    token_type: str = "Bearer"
 
 
 class UserCreateSchema(BaseModel):
@@ -16,10 +16,6 @@ class UserCreateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserCreateSchemaOAuth(BaseModel):
-    name: str
-    surname: str
-    password: str | bytes | None = None
-    email: str
+class UserCreateSchemaOAuth(UserCreateSchema):
     google_access_token: str | None = None
     yandex_access_token: str | None = None

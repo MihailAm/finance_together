@@ -5,10 +5,11 @@ from datetime import datetime, timedelta
 
 import jwt
 import bcrypt
-from jwt import DecodeError
+from jwt import InvalidTokenError
 
 from app.settings import Settings
-from app.users.exception import TokenNotCorrect, TokenExpired, UserNotFoundException, UserNotCorrectPasswordException
+from app.users.exception import TokenNotCorrect, TokenExpired, UserNotFoundException, UserNotCorrectPasswordException, \
+    TokenNotCorrectType, PasswordValidationError
 from app.users.repository import UserRepository
 from app.users.schema import UserLoginSchema
 
@@ -28,57 +29,84 @@ class AuthService:
         if not self.validate_password(password=password, hashed_password=user.password):
             raise UserNotCorrectPasswordException
 
-        payload = {
-            'sub': user.id,
-            'email': user.email,
-        }
+        access_token = await self.generate_access_token(user_id=user.id)
+        refresh_token = self.generate_refresh_token(user=user)
+        return UserLoginSchema(access_token=access_token,
+                               refresh_token=refresh_token)
 
-        access_token = self.generate_access_token(payload)
-        return UserLoginSchema(user_id=user.id, access_token=access_token)
-
-    def generate_access_token(self, payload) -> str:
-        to_encode = payload.copy()
-        expire = datetime.now() + timedelta(minutes=5)
-
-        to_encode.update(
-            exp=expire,
-        )
-
+    def create_jwt(self, token_type: str, token_data: dict) -> str:
+        jwt_payload = {self.setting.TOKEN_TYPE_FIELD: token_type}
+        jwt_payload.update(token_data)
         token = jwt.encode(
-            to_encode,
+            jwt_payload,
             key=self.setting.PRIVATE_KEY_PATH.read_text(),
             algorithm=self.setting.JWT_ENCODE_ALGORITHM
         )
         return token
 
+    async def generate_access_token(self, user_id: int) -> str:
+        user = await self.user_repository.get_user(user_id=user_id)
+        now = datetime.now()
+        expire = now + timedelta(days=5)
+        to_encode = {
+            'sub': user.email,
+            'user_id': user.id,
+            'iat': now.timestamp(),
+            'exp': expire,
+        }
+
+        return self.create_jwt(token_type=self.setting.ACCESS_TOKEN_TYPE, token_data=to_encode)
+
+    def generate_refresh_token(self, user):
+        now = datetime.now()
+        expire = now + timedelta(days=30)
+        to_encode = {
+            'user_id': user.id,
+            'iat': now.timestamp(),
+            'exp': expire
+        }
+
+        return self.create_jwt(token_type=self.setting.REFRESH_TOKEN_TYPE, token_data=to_encode)
+
     @staticmethod
     def validate_password(password: str, hashed_password: str) -> bool:
-        logger.debug(f"Password: {password}")
-        logger.debug(f"Hashed password from DB (Base64): {hashed_password}")
-
         try:
             stored_hash = base64.b64decode(hashed_password.encode())
-        except Exception as e:
-            logger.error(f"Failed to decode Base64: {e}")
+        except PasswordValidationError as e:
             return False
 
-        logger.debug(f"Decoded stored hash (bcrypt format): {stored_hash}")
-
         is_valid = bcrypt.checkpw(password.encode(), stored_hash)
-        logger.debug(f"Password validation result: {is_valid}")
+
         return is_valid
 
-    def get_user_id_from_access_token(self, access_token: str | bytes):
+    def validate_token_type(self, payload: dict,
+                            token_type: str) -> bool:
+        current_token_type = payload.get(self.setting.TOKEN_TYPE_FIELD)
+        if current_token_type == token_type:
+            return True
+        raise TokenNotCorrectType(message=f"Invalid token type {current_token_type} expected {token_type}")
+
+    def get_user_id_from_token(self, token: str | bytes, expected_token_type: str) -> int:
+
         try:
+
             decoded = jwt.decode(
-                access_token,
+                jwt=token,
                 key=self.setting.PUBLIC_KEY_PATH.read_text(),
                 algorithms=[self.setting.JWT_ENCODE_ALGORITHM]
             )
-        except DecodeError:
+        except InvalidTokenError:
             raise TokenNotCorrect
+
+        self.validate_token_type(decoded, expected_token_type)
 
         if decoded['exp'] < datetime.now().timestamp():
             raise TokenExpired
 
         return decoded['user_id']
+
+    def get_user_id_from_access_token(self, access_token: str | bytes) -> int:
+        return self.get_user_id_from_token(access_token, self.setting.ACCESS_TOKEN_TYPE)
+
+    def get_user_id_from_refresh_token(self, refresh_token: str | bytes) -> int:
+        return self.get_user_id_from_token(refresh_token, self.setting.REFRESH_TOKEN_TYPE)
