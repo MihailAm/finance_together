@@ -7,7 +7,7 @@ from alembic import context
 
 from app.infrastructure.database import Base
 from app.settings import Settings
-from app.finance.models import Category, Transaction, Goal, PlannedExpenses, Debt
+from app.finance.models import Category, FinanceTransaction, Goal, PlannedExpenses, Debt
 from app.users.models import UserProfile, Account
 from app.groups.models import Group, GroupMember
 

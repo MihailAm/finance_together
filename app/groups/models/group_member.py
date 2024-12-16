@@ -20,5 +20,5 @@ class GroupMember(Base):
     role: Mapped[str] = mapped_column(SQLEnum(RoleEnum), default=RoleEnum.MEMBER, nullable=False)
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
-    user = relationship("User", back_populates="group_associations")
-    group = relationship("Group", back_populates="member_associations")
+    # user = relationship("User", back_populates="group_associations")
+    # group = relationship("Group", back_populates="member_associations")

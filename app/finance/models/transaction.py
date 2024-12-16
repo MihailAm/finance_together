@@ -13,17 +13,18 @@ class TransactionType(str, Enum):
     EXPENSE = "расход"
 
 
-class Transaction(Base):
-    __tablename__ = "transactions"
+class FinanceTransaction(Base):
+    __tablename__ = "finance_transactions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     amount: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=True)
     transaction_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     type: Mapped[TransactionType] = mapped_column(SQLAlchemyEnum(TransactionType), nullable=False)
+
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=False)
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories.id'), nullable=False)
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id"), nullable=False)
 
-    account = relationship("Account", back_populates="transactions")
-    user = relationship("UserProfile", back_populates="transactions")
+    # account = relationship("Account", back_populates="transactions")
+    # user = relationship("UserProfile", back_populates="transactions")

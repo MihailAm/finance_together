@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from pydantic.v1 import ConfigDict
 from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     DB_HOST: str
@@ -8,15 +11,19 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
     DB_DRIVER: str
-    CACHE_HOST: str
-    CACHE_PORT: int
-    CACHE_DB: int
-    JWT_SECRET_KEY: str
+
+    PRIVATE_KEY_PATH: Path
+    PUBLIC_KEY_PATH: Path
     JWT_ENCODE_ALGORITHM: str
+    TOKEN_TYPE_FIELD: str = "type"
+    ACCESS_TOKEN_TYPE: str = "access"
+    REFRESH_TOKEN_TYPE: str = "refresh"
+
     GOOGLE_CLIENT_ID: str
     GOOGLE_SECRET_KEY: str
     GOOGLE_REDIRECT_URI: str
     GOOGLE_TOKEN_URL: str
+
     YANDEX_CLIENT_ID: str
     YANDEX_SECRET_KEY: str
     YANDEX_REDIRECT_URI: str
@@ -35,4 +42,3 @@ class Settings(BaseSettings):
     @property
     def yandex_redirect_url(self) -> str:
         return f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&redirect_uri={self.YANDEX_REDIRECT_URI}"
-

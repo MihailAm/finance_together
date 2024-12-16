@@ -26,4 +26,4 @@ class Debt(Base):
 
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
 
-    user = relationship("UserProfile", back_populates="debts")
+    # user = relationship("UserProfile", back_populates="debts")

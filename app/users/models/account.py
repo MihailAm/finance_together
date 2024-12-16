@@ -16,9 +16,9 @@ class Account(Base):
     group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
-    user = relationship("UserProfile", back_populates="account")
-    transactions = relationship("Transaction", back_populates="account", cascade="all, delete-orphan")
-    group = relationship("Group", back_populates="account")
+    # user = relationship("UserProfile", back_populates="account")
+    # transactions = relationship("FinanceTransaction", back_populates="account")
+    # group = relationship("Group", back_populates="account")
 
     @validates("user_id", "group_id")
     def validate_user_or_group(self, key, value):
