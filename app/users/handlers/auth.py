@@ -60,3 +60,20 @@ async def google_auth(
         code: str
 ):
     return await auth_service.google_auth(code=code)
+
+
+
+@router.get('/login/yandex',
+            response_class=RedirectResponse)
+async def yandex_client(auth_service: Annotated[AuthService, Depends(get_auth_service)]):
+    redirect_url = auth_service.get_yandex_redirect_url()
+    print(redirect_url)
+    return RedirectResponse(redirect_url)
+
+
+@router.get('/yandex')
+async def yandex_auth(
+        auth_service: Annotated[AuthService, Depends(get_auth_service)],
+        code: str
+):
+    return await auth_service.yandex_auth(code=code)

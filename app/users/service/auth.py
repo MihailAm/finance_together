@@ -9,10 +9,12 @@ from jwt import InvalidTokenError
 
 from app.settings import Settings
 from app.users.client import GoogleClient
+from app.users.client.yandex import YandexClient
 from app.users.exception import TokenNotCorrect, TokenExpired, UserNotFoundException, UserNotCorrectPasswordException, \
     TokenNotCorrectType, PasswordValidationError
+
 from app.users.repository import UserRepository
-from app.users.schema import UserLoginSchema, UserCreateSchema
+from app.users.schema import UserLoginSchema, UserCreateSchema, YandexUserData, GoogleUserData
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -23,6 +25,7 @@ class AuthService:
     setting: Settings
     user_repository: UserRepository
     google_client: GoogleClient
+    yandex_client: YandexClient
 
     async def login(self, email: str, password: str) -> UserLoginSchema:
         user = await self.user_repository.get_user_by_email(email)
@@ -116,9 +119,10 @@ class AuthService:
     def get_google_redirect_url(self):
         return self.setting.google_redirect_url
 
-    async def google_auth(self, code: str):
-        user_data = await self.google_client.get_user_info(code=code)
-        logger.debug(f"Это юзер дата {user_data}")
+    def get_yandex_redirect_url(self):
+        return self.setting.yandex_redirect_url
+
+    async def authenticate_oauth(self, user_data: GoogleUserData | YandexUserData) -> UserLoginSchema:
         user = await self.user_repository.get_user_by_email(email=user_data.email)
         if user:
             access_token = await self.generate_access_token(user_id=user.id)
@@ -139,3 +143,12 @@ class AuthService:
         return UserLoginSchema(access_token=access_token,
                                refresh_token=refresh_token)
 
+    async def google_auth(self, code: str):
+        user_data = await self.google_client.get_user_info(code=code)
+
+        return await self.authenticate_oauth(user_data=user_data)
+
+    async def yandex_auth(self, code: str):
+        user_data = await self.yandex_client.get_user_info(code=code)
+
+        return await self.authenticate_oauth(user_data=user_data)

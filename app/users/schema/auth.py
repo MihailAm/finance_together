@@ -11,12 +11,10 @@ class GoogleUserData(BaseModel):
     name: str = Field(alias="given_name")
     surname: str = Field(alias="family_name")
     email: str
-    access_token: str
 
 
 class YandexUserData(BaseModel):
     id: int
-    login: str
-    name: str = Field(alias="real_name")
-    default_email: str
-    access_token: str
+    name: str = Field(alias="first_name")
+    surname: str = Field(alias="last_name")
+    email: str = Field(alias="default_email")

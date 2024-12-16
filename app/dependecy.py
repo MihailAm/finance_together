@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.infrastructure.database import get_db_session
 from app.settings import Settings
 from app.users.client import GoogleClient
+from app.users.client.yandex import YandexClient
 from app.users.exception import TokenExpired, TokenNotCorrect, TokenNotCorrectType
 from app.users.repository import UserRepository
 from app.users.service import AuthService, UserService
@@ -22,11 +23,17 @@ async def get_google_client(async_client: httpx.AsyncClient = Depends(get_async_
     return GoogleClient(settings=Settings(), async_client=async_client)
 
 
+async def get_yandex_client(async_client: httpx.AsyncClient = Depends(get_async_client)) -> YandexClient:
+    return YandexClient(settings=Settings(), async_client=async_client)
+
+
 async def get_auth_service(user_repository: UserRepository = Depends(get_user_repository),
-                           google_client: GoogleClient = Depends(get_google_client)) -> AuthService:
+                           google_client: GoogleClient = Depends(get_google_client),
+                           yandex_client: YandexClient = Depends(get_yandex_client)) -> AuthService:
     return AuthService(setting=Settings(),
                        user_repository=user_repository,
-                       google_client=google_client)
+                       google_client=google_client,
+                       yandex_client=yandex_client)
 
 
 reusable_oauth2 = security.HTTPBearer()
