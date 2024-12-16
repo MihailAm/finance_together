@@ -28,12 +28,12 @@ class UserService:
             password=self.hash_password(password)
         )
         user = await self.user_repository.create_user(create_user_data)
-        payload = {
-            'sub': user.id,
-            'email': user.email,
-        }
-        access_token = self.auth_service.generate_access_token(payload=payload)
-        return UserLoginSchema(user_id=user.id, access_token=access_token)
+
+
+        access_token = await self.auth_service.generate_access_token(user_id=user.id)
+        refresh_token = self.auth_service.generate_refresh_token(user=user)
+        return UserLoginSchema(access_token=access_token,
+                               refresh_token=refresh_token)
 
 
 

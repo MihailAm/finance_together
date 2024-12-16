@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.util import await_only
+from fastapi.responses import RedirectResponse
 
 from app.dependecy import get_auth_service, get_request_user_id, get_user_repository, get_request_user_id_from_refresh
 from app.users.exception import UserNotFoundException, UserNotCorrectPasswordException
@@ -35,13 +35,28 @@ async def login(body: AuthJwtSchema,
              response_model=UserLoginSchema,
              response_model_exclude_none=True)
 async def auth_refresh_jwt(auth_service: Annotated[AuthService, Depends(get_auth_service)],
-                     user_id: int = Depends(get_request_user_id_from_refresh)):
+                           user_id: int = Depends(get_request_user_id_from_refresh)):
     access_token = await auth_service.generate_access_token(user_id=user_id)
     return UserLoginSchema(access_token=access_token)
-
 
 
 @router.get('tests', response_model=UserCreateSchema)
 async def test(user_rep: Annotated[UserRepository, Depends(get_user_repository)],
                user_id: int = Depends(get_request_user_id)):
     return await user_rep.get_user(user_id=user_id)
+
+
+@router.get('/login/google',
+            response_class=RedirectResponse)
+async def google_client(auth_service: Annotated[AuthService, Depends(get_auth_service)]):
+    redirect_url = auth_service.get_google_redirect_url()
+    print(redirect_url)
+    return RedirectResponse(redirect_url)
+
+
+@router.get('/google')
+async def google_auth(
+        auth_service: Annotated[AuthService, Depends(get_auth_service)],
+        code: str
+):
+    return await auth_service.google_auth(code=code)

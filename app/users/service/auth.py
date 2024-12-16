@@ -8,10 +8,11 @@ import bcrypt
 from jwt import InvalidTokenError
 
 from app.settings import Settings
+from app.users.client import GoogleClient
 from app.users.exception import TokenNotCorrect, TokenExpired, UserNotFoundException, UserNotCorrectPasswordException, \
     TokenNotCorrectType, PasswordValidationError
 from app.users.repository import UserRepository
-from app.users.schema import UserLoginSchema
+from app.users.schema import UserLoginSchema, UserCreateSchema
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 class AuthService:
     setting: Settings
     user_repository: UserRepository
+    google_client: GoogleClient
 
     async def login(self, email: str, password: str) -> UserLoginSchema:
         user = await self.user_repository.get_user_by_email(email)
@@ -47,7 +49,7 @@ class AuthService:
     async def generate_access_token(self, user_id: int) -> str:
         user = await self.user_repository.get_user(user_id=user_id)
         now = datetime.now()
-        expire = now + timedelta(days=5)
+        expire = now + timedelta(minutes=15)
         to_encode = {
             'sub': user.email,
             'user_id': user.id,
@@ -110,3 +112,30 @@ class AuthService:
 
     def get_user_id_from_refresh_token(self, refresh_token: str | bytes) -> int:
         return self.get_user_id_from_token(refresh_token, self.setting.REFRESH_TOKEN_TYPE)
+
+    def get_google_redirect_url(self):
+        return self.setting.google_redirect_url
+
+    async def google_auth(self, code: str):
+        user_data = await self.google_client.get_user_info(code=code)
+        logger.debug(f"Это юзер дата {user_data}")
+        user = await self.user_repository.get_user_by_email(email=user_data.email)
+        if user:
+            access_token = await self.generate_access_token(user_id=user.id)
+            refresh_token = self.generate_refresh_token(user=user)
+            return UserLoginSchema(access_token=access_token,
+                                   refresh_token=refresh_token)
+
+        create_user_data = UserCreateSchema(
+            name=user_data.name,
+            surname=user_data.surname,
+            email=user_data.email
+        )
+
+        created_user = await self.user_repository.create_user(user=create_user_data)
+
+        access_token = await self.generate_access_token(user_id=created_user.id)
+        refresh_token = self.generate_refresh_token(user=created_user)
+        return UserLoginSchema(access_token=access_token,
+                               refresh_token=refresh_token)
+
