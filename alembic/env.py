@@ -8,7 +8,7 @@ from alembic import context
 from app.infrastructure.database import Base
 from app.settings import Settings
 from app.finance.models import Category, FinanceTransaction, Goal, PlannedExpenses, Debt
-from app.users.models import UserProfile, Account
+from app.users.models import Account, UserProfile
 from app.groups.models import Group, GroupMember
 
 # this is the Alembic Config object, which provides
