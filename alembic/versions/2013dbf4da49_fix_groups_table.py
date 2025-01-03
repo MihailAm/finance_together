@@ -1,8 +1,8 @@
-"""update
+"""Fix groups table
 
-Revision ID: 9207d51ad060
-Revises: fee888929e95
-Create Date: 2024-11-29 14:55:45.770540
+Revision ID: 2013dbf4da49
+Revises: b87c85adda9f
+Create Date: 2024-12-30 18:25:18.956424
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '9207d51ad060'
-down_revision: Union[str, None] = 'fee888929e95'
+revision: str = '2013dbf4da49'
+down_revision: Union[str, None] = 'b87c85adda9f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
