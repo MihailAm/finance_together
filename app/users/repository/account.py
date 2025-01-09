@@ -49,8 +49,8 @@ class AccountRepository:
 
         return account
 
-    async def create_account_group(self, account: AccountCreateSchemaUser, group_id: int) -> int:
-        account_model = Account(account_name=account.account_name,
+    async def create_account_group(self, account_name: str, group_id: int) -> int:
+        account_model = Account(account_name=account_name,
                                 group_id=group_id
                                 )
 

@@ -40,12 +40,6 @@ async def auth_refresh_jwt(auth_service: Annotated[AuthService, Depends(get_auth
     return UserLoginSchema(access_token=access_token)
 
 
-@router.get('tests', response_model=UserCreateSchema)
-async def test(user_rep: Annotated[UserRepository, Depends(get_user_repository)],
-               user_id: int = Depends(get_request_user_id)):
-    return await user_rep.get_user(user_id=user_id)
-
-
 @router.get('/login/google',
             response_class=RedirectResponse)
 async def google_client(auth_service: Annotated[AuthService, Depends(get_auth_service)]):
@@ -60,7 +54,6 @@ async def google_auth(
         code: str
 ):
     return await auth_service.google_auth(code=code)
-
 
 
 @router.get('/login/yandex',

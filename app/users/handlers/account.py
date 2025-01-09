@@ -6,7 +6,7 @@ from fastapi.params import Depends
 from app.dependecy import get_request_user_id, get_account_service
 from app.groups.exception import UserNotFoundInGroup
 from app.users.exception import AccountNotFound, GroupAccountConflictException, AccountAccessError
-from app.users.schema import AccountSchema, AccountCreateSchemaUser, DepositRequest
+from app.users.schema import AccountSchema, AccountCreateSchemaUser, DepositRequest, AccountCreateSchemaGroup
 from app.users.service import AccountService
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
@@ -36,14 +36,13 @@ async def create_user_account(body: AccountCreateSchemaUser,
     return account
 
 
-@router.post("/group/{group_id}", response_model=AccountSchema, response_model_exclude_unset=True)
-async def create_group_account(group_id: int,
-                               body: AccountCreateSchemaUser,
+@router.post("/group", response_model=AccountSchema, response_model_exclude_unset=True)
+async def create_group_account(body: AccountCreateSchemaGroup,
                                account_service: Annotated[AccountService, Depends(get_account_service)],
                                ):
     """Метод для создания аккаунта группы"""
     try:
-        account = await account_service.create_group_account(body=body, group_id=group_id)
+        account = await account_service.create_group_account(name=body.account_name, group_id=body.group_id)
         return account
     except GroupAccountConflictException as e:
         raise HTTPException(
@@ -72,14 +71,14 @@ async def group_account(group_id: int,
         )
 
 
-@router.patch("/{account_id}", response_model=AccountSchema)
+@router.patch("/rename/{account_id}", response_model=AccountSchema)
 async def rename_account(account_id: int,
-                         account_name: str,
+                         body: AccountCreateSchemaUser,
                          account_service: Annotated[AccountService, Depends(get_account_service)],
                          user_id: int = Depends(get_request_user_id)):
     """Метод для изменения имени аккаунта"""
     try:
-        update_task = await account_service.update_account_name(account_id=account_id, account_name=account_name,
+        update_task = await account_service.update_account_name(account_id=account_id, account_name=body.account_name,
                                                                 user_id=user_id)
         return update_task
     except AccountNotFound as e:
@@ -89,7 +88,7 @@ async def rename_account(account_id: int,
         )
 
 
-@router.patch("/{account_id}/deposit", response_model=AccountSchema)
+@router.patch("/deposit", response_model=AccountSchema)
 async def deposit_account(deposit: DepositRequest,
                           account_service: Annotated[AccountService, Depends(get_account_service)],
                           user_id: int = Depends(get_request_user_id)):
@@ -119,7 +118,7 @@ async def deposit_account(deposit: DepositRequest,
         )
 
 
-@router.patch("/{account_id}/withdraw", response_model=AccountSchema)
+@router.patch("/withdraw", response_model=AccountSchema)
 async def withdraw_account(deposit: DepositRequest,
                            account_service: Annotated[AccountService, Depends(get_account_service)],
                            user_id: int = Depends(get_request_user_id)):

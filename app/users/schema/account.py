@@ -18,6 +18,13 @@ class AccountCreateSchemaUser(BaseModel):
     account_name: str
 
 
+class AccountCreateSchemaGroup(AccountCreateSchemaUser):
+    group_id: int
+
+
 class DepositRequest(BaseModel):
     account_id: int
     amount: float
+
+
+
