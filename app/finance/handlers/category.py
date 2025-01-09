@@ -14,6 +14,7 @@ async def create_category(body: OperationCategorySchema,
                           category_service: Annotated[CategoryService, Depends(get_category_service)],
                           user_id: int = Depends(get_request_user_id),
                           ):
+    """Метод для создании категории"""
     return await category_service.create_category(name=body.name, user_id=user_id)
 
 
@@ -21,6 +22,7 @@ async def create_category(body: OperationCategorySchema,
 async def get_all_categories(category_service: Annotated[CategoryService, Depends(get_category_service)],
                              user_id: int = Depends(get_request_user_id)
                              ):
+    """Метод для получения всех категорий"""
     try:
         cats = await category_service.get_all_categories(user_id=user_id)
         return cats
@@ -36,6 +38,7 @@ async def get_category_by_id(category_id: int,
                              category_service: Annotated[CategoryService, Depends(get_category_service)],
                              user_id: int = Depends(get_request_user_id)
                              ):
+    """Метод для получений категории по id"""
     try:
         cat = await category_service.get_category_by_id(category_id=category_id, user_id=user_id)
         return cat
@@ -53,6 +56,7 @@ async def update_category_name(category_id: int,
                                user_id: int = Depends(get_request_user_id),
 
                                ):
+    """Метод для обновлении имени категории"""
     try:
         category = await category_service.update_category_name(category_id=category_id, new_name=body.name,
                                                                user_id=user_id)
@@ -69,6 +73,7 @@ async def delete_category(category_id: int,
                           category_service: Annotated[CategoryService, Depends(get_category_service)],
                           user_id: int = Depends(get_request_user_id)
                           ):
+    """Метод для удаления категории"""
     try:
         await category_service.delete_category(category_id=category_id, user_id=user_id)
     except CategoryNotFound as e:
