@@ -19,3 +19,12 @@ class UserCreateSchema(BaseModel):
 class UserCreateSchemaOAuth(UserCreateSchema):
     google_access_token: str | None = None
     yandex_access_token: str | None = None
+
+
+class UserSchema(BaseModel):
+    id: int
+    name: str
+    surname: str
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)

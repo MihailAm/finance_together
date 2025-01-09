@@ -28,9 +28,9 @@ class AccountService:
         account = await self.account_repository.get_account(account_id=account_id, user_id=user_id)
         return AccountSchema.model_validate(account)
 
-    async def create_group_account(self, body: AccountCreateSchemaUser, group_id: int) -> AccountSchema:
+    async def create_group_account(self, name: str, group_id: int) -> AccountSchema:
         try:
-            account_group_id = await self.account_repository.create_account_group(account=body, group_id=group_id)
+            account_group_id = await self.account_repository.create_account_group(account_name=name, group_id=group_id)
             account = await self.account_repository.get_account(group_id=account_group_id)
 
             return AccountSchema.model_validate(account)
@@ -94,5 +94,3 @@ class AccountService:
                 raise AccountAccessError("Вы не состоите в этой группе")
             account_update = await self.account_repository.deposit_balance(account.id, -amount)
             return AccountSchema.model_validate(account_update)
-
-

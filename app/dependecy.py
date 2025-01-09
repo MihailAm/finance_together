@@ -2,7 +2,8 @@ import httpx
 from fastapi import Depends, security, Security, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.groups.repository import GroupMemberRepository
+from app.groups.repository import GroupMemberRepository, GroupRepository
+from app.groups.service import GroupService
 from app.groups.service.group_member import GroupMemberService
 from app.infrastructure.database import get_db_session
 from app.settings import Settings
@@ -100,8 +101,11 @@ async def get_group_member_repository(db_session: AsyncSession = Depends(get_db_
 
 
 async def get_group_member_service(
-        group_member_repository: GroupMemberRepository = Depends(get_group_member_repository)) -> GroupMemberService:
-    return GroupMemberService(setting=Settings(), group_member_repository=group_member_repository)
+        group_member_repository: GroupMemberRepository = Depends(get_group_member_repository),
+        user_service: UserService = Depends(get_user_service)) -> GroupMemberService:
+    return GroupMemberService(setting=Settings(),
+                              group_member_repository=group_member_repository,
+                              user_profile_service=user_service)
 
 
 async def get_account_repository(db_session: AsyncSession = Depends(get_db_session)) -> AccountRepository:
@@ -114,3 +118,15 @@ async def get_account_service(
     return AccountService(setting=Settings(),
                           account_repository=account_repository,
                           group_member_service=group_member_service)
+
+
+async def get_group_repository(db_session: AsyncSession = Depends(get_db_session)) -> GroupRepository:
+    return GroupRepository(db_session=db_session)
+
+
+async def get_group_service(group_repository: GroupRepository = Depends(get_group_repository),
+                            group_member_repository: GroupMemberService = Depends(
+                                get_group_member_service)) -> GroupService:
+    return GroupService(setting=Settings(),
+                        group_repository=group_repository,
+                        group_member_service=group_member_repository)

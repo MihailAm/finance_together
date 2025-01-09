@@ -1,5 +1,7 @@
 class UserNotFoundException(Exception):
-    detail = "User not found"
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
 
 
 class UserNotCorrectPasswordException(Exception):
@@ -16,6 +18,7 @@ class TokenNotCorrect(Exception):
 
 class JWTError(Exception):
     detail = "Token is not decoded"
+
 
 class PasswordValidationError(Exception):
     def __init__(self, message: str):
@@ -34,10 +37,12 @@ class AccountNotFound(Exception):
         self.message = message
         super().__init__(self.message)
 
+
 class GroupAccountConflictException(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
         super().__init__(self.message)
+
 
 class AccountAccessError(Exception):
     def __init__(self, message: str) -> None:
