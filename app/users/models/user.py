@@ -2,9 +2,8 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import Integer, String, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.finance.models import FinanceTransaction
 from app.infrastructure.database import Base
 
 
@@ -18,3 +17,4 @@ class UserProfile(Base):
     password: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
+    transactions = relationship("FinanceTransaction", back_populates="user", cascade="all, delete-orphan")
