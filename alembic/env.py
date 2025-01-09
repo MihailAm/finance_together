@@ -36,6 +36,7 @@ config = context.config
 def do_run_migrations(connection):
     context.configure(
         compare_type=True,
+        compare_server_default=True,
         dialect_opts={"paramstyle": "named"},
         connection=connection,
         target_metadata=target_metadata,

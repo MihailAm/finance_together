@@ -1,6 +1,6 @@
-from app.users.schema.user import UserLoginSchema, UserCreateSchema
+from app.users.schema.user import UserLoginSchema, UserCreateSchema, UserSchema
 from app.users.schema.auth import AuthJwtSchema, GoogleUserData, YandexUserData
-from app.users.schema.account import AccountSchema, AccountCreateSchemaUser, DepositRequest
+from app.users.schema.account import AccountSchema, AccountCreateSchemaUser, DepositRequest, AccountCreateSchemaGroup
 
 __all__ = ["UserLoginSchema",
            "UserCreateSchema",
@@ -9,5 +9,7 @@ __all__ = ["UserLoginSchema",
            "YandexUserData",
            "AccountSchema",
            "AccountCreateSchemaUser",
-           "DepositRequest"
+           "DepositRequest",
+           "UserSchema",
+           "AccountCreateSchemaGroup",
            ]
