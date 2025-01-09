@@ -22,9 +22,9 @@ class FinanceTransaction(Base):
     transaction_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     type: Mapped[TransactionType] = mapped_column(SQLAlchemyEnum(TransactionType), nullable=False)
 
-    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=False)
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id", ondelete="CASCADE"), nullable=False)
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id"), nullable=False)
 
-    # account = relationship("Account", back_populates="transactions")
-    # user = relationship("UserProfile", back_populates="transactions")
+    account = relationship("Account", back_populates="transactions")
+    user = relationship("UserProfile", back_populates="transactions")

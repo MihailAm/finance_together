@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from sqlalchemy.exc import IntegrityError
 
@@ -16,7 +17,7 @@ class AccountService:
     group_member_service: GroupMemberService
 
     async def all_accounts(self, user_id) -> list[AccountSchema]:
-        accounts = await self.account_repository.get_accounts(user_id)
+        accounts = await self.account_repository.get_accounts(user_id=user_id)
         if not accounts:
             raise AccountNotFound("У пользователя не найдено ни одного аккаунта")
 
@@ -45,6 +46,17 @@ class AccountService:
 
         if await self.group_member_service.belongs_user_to_group(group_id=group_id, user_id=user_id):
             return AccountSchema.model_validate(account)
+
+    async def get_account_by_anything(self, account_id: Optional[int] = None,
+                                      user_id: Optional[int] = None,
+                                      group_id: Optional[int] = None) -> AccountSchema:
+        account = await self.account_repository.get_account(account_id=account_id,
+                                                            user_id=user_id,
+                                                            group_id=group_id)
+        if not account:
+            raise AccountNotFound("Аккаунта не существует")
+
+        return AccountSchema.model_validate(account)
 
     async def update_account_name(self, account_id: int, account_name: str, user_id: int) -> AccountSchema:
         account = await self.account_repository.get_account(user_id=user_id, account_id=account_id)
