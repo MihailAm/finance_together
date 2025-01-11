@@ -2,9 +2,9 @@ import httpx
 from fastapi import Depends, security, Security, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.finance.repository import TransactionRepository
+from app.finance.repository import TransactionRepository, PlannedExpensesRepository
 from app.finance.repository.category import CategoryRepository
-from app.finance.service import TransactionService
+from app.finance.service import TransactionService, PlannedExpensesService
 from app.finance.service.category import CategoryService
 from app.groups.repository import GroupMemberRepository, GroupRepository
 from app.groups.service import GroupService
@@ -160,3 +160,19 @@ async def get_transaction_service(
                               group_member_service=group_member_service,
                               account_service=account_service
                               )
+
+
+async def get_planned_expenses_repository(
+        db_session: AsyncSession = Depends(get_db_session)) -> PlannedExpensesRepository:
+    return PlannedExpensesRepository(db_session=db_session)
+
+
+async def get_planned_expenses_service(
+        planned_expenses_repository: PlannedExpensesRepository = Depends(get_planned_expenses_repository),
+        group_member_service: GroupMemberService = Depends(get_group_member_service),
+        account_service: AccountService = Depends(get_account_service)
+) -> PlannedExpensesService:
+    return PlannedExpensesService(planned_expenses_repository=planned_expenses_repository,
+                                  group_member_service=group_member_service,
+                                  account_service=account_service
+                                  )

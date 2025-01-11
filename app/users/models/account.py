@@ -20,6 +20,7 @@ class Account(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
     transactions = relationship("FinanceTransaction", back_populates="account", cascade="all, delete-orphan")
+    planned_expenses = relationship("PlannedExpenses", back_populates="account", cascade="all, delete-orphan")
 
     @validates("user_id", "group_id")
     def validate_user_or_group(self, key, value):

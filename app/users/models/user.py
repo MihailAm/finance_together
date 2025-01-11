@@ -18,3 +18,4 @@ class UserProfile(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
     transactions = relationship("FinanceTransaction", back_populates="user", cascade="all, delete-orphan")
+    planned_expenses = relationship("PlannedExpenses", back_populates="user", cascade="all, delete-orphan")

@@ -6,6 +6,7 @@ from app.dependecy import get_request_user_id, get_transaction_service
 from app.finance.exception import TransactionNotFound, AccessDeniedTransaction
 from app.finance.schema import TransactionResponseSchema, CreateTransactionSchema
 from app.finance.service import TransactionService
+from app.groups.exception import AccessDenied, UserNotFoundInGroup
 from app.users.exception import AccountNotFound
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -17,8 +18,24 @@ async def create_transaction(transaction_data: CreateTransactionSchema,
                              user_id: int = Depends(get_request_user_id)
                              ):
     """Метод для создания транзакции"""
-    transaction = await transaction_service.create_transaction(transaction_data=transaction_data, user_id=user_id)
-    return transaction
+    try:
+        transaction = await transaction_service.create_transaction(transaction_data=transaction_data, user_id=user_id)
+        return transaction
+    except AccessDenied as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=e.message
+        )
+    except UserNotFoundInGroup as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.message
+        )
+    except AccountNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.message
+        )
 
 
 @router.get("/account/{account_id}", response_model=List[TransactionResponseSchema])
