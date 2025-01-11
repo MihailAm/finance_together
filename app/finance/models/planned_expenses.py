@@ -22,18 +22,9 @@ class PlannedExpenses(Base):
     dur_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     type: Mapped[PlannedExpenseType] = mapped_column(SQLAlchemyEnum(PlannedExpenseType), nullable=False)
 
-    group_id: Mapped[int] = mapped_column(Integer, ForeignKey("groups.id"), nullable=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
+    account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id", ondelete="CASCADE"), nullable=True)
     category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories.id'), nullable=False)
 
-    # user = relationship("UserProfile", back_populates="planned_expenses")
-    # group = relationship("Group", back_populates="planned_expenses")
-
-    @validates("user_id", "group_id")
-    def validate_user_or_group(self, key, value):
-        if key == "user_id" and value is not None and self.group_id is not None:
-            raise ValueError("Планирование не может быть и персональным и групповым.")
-        if key == "group_id" and value is not None and self.user_id is not None:
-            raise ValueError("Планирование не может быть и персональным и групповым.")
-        return value
-
+    user = relationship("UserProfile", back_populates="planned_expenses")
+    account = relationship("Account", back_populates="planned_expenses")
