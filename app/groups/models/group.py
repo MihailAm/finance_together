@@ -4,7 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.infrastructure.database import Base
 
 
-
 class Group(Base):
     __tablename__ = "groups"
 
@@ -12,3 +11,4 @@ class Group(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
 
     group_members = relationship("GroupMember", back_populates="groups", cascade="all, delete-orphan")
+    goals = relationship("Goal", back_populates="group", cascade="all, delete-orphan")
