@@ -32,3 +32,15 @@ class AccessDeniedGoal(Exception):
     def __init__(self, message: str):
         self.message = message
         super().__init__(self.message)
+
+
+class DebtNotFound(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
+
+
+class AccessDeniedDebt(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)

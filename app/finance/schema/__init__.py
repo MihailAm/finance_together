@@ -3,6 +3,7 @@ from app.finance.schema.transaction import TransactionResponseSchema, CreateTran
 from app.finance.schema.planned_expenses import PlannedExpensesCreateSchema, PlannedExpensesResponseSchema
 from app.finance.schema.goal import GoalUserCreateSchema, GoalResponseSchema, GoalUpdateAmountSchema, \
     GoalGroupCreateSchema
+from app.finance.schema.debt import DebtCreateSchema, DebtResponseSchema, DebtUpdateAmountSchema
 
 __all__ = ["CategorySchema",
            "OperationCategorySchema",
@@ -13,4 +14,7 @@ __all__ = ["CategorySchema",
            "GoalUserCreateSchema",
            "GoalGroupCreateSchema",
            "GoalResponseSchema",
-           "GoalUpdateAmountSchema"]
+           "GoalUpdateAmountSchema",
+           "DebtCreateSchema",
+           "DebtResponseSchema",
+           "DebtUpdateAmountSchema"]
