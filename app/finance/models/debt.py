@@ -24,4 +24,6 @@ class Debt(Base):
     due_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     status: Mapped[DebtStatus] = mapped_column(SQLAlchemyEnum(DebtStatus), default=DebtStatus.PENDING, nullable=False)
 
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id"), nullable=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id", ondelete="CASCADE"), nullable=True)
+
+    user = relationship("UserProfile", back_populates="debt")
