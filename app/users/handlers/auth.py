@@ -22,7 +22,7 @@ async def login(body: AuthJwtSchema,
     except UserNotFoundException as e:
         raise HTTPException(
             status_code=404,
-            detail=e.detail
+            detail=e.message
         )
     except UserNotCorrectPasswordException as e:
         raise HTTPException(
