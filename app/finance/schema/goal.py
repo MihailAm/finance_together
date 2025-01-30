@@ -36,4 +36,4 @@ class GoalGroupCreateSchema(GoalUserCreateSchema):
 
 class GoalUpdateAmountSchema(BaseModel):
     id: int
-    target_amount: float
+    contribute_amount: float
