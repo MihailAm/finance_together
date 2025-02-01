@@ -9,6 +9,7 @@ class UserGroupResponse(BaseModel):
     id: int
     user_id: int
     group_name: str
+    group_id: int
     role: str
     joined_at: datetime
 

@@ -40,6 +40,7 @@ class GroupMemberRepository:
                 GroupMember.id,
                 GroupMember.user_id,
                 Group.name.label("group_name"),
+                GroupMember.group_id,
                 GroupMember.role.label("role"),
                 GroupMember.joined_at
             )
