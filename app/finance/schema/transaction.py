@@ -23,4 +23,4 @@ class CreateTransactionSchema(BaseModel):
     description: str | None = None
     type: TransactionType
     account_id: int
-    category_id: int
+    category_id: int | None = None

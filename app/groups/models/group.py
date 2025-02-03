@@ -11,4 +11,3 @@ class Group(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
 
     group_members = relationship("GroupMember", back_populates="groups", cascade="all, delete-orphan")
-    goals = relationship("Goal", back_populates="group", cascade="all, delete-orphan")

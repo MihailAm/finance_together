@@ -15,13 +15,13 @@ class GoalResponseSchema(BaseModel):
     created_at: datetime
     status: GoalStatus
 
-    user_id: int | None
-    group_id: int | None
+    user_id: int
+    account_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class GoalUserCreateSchema(BaseModel):
+class GoalCreateSchema(BaseModel):
     name: str
     target_amount: float
     current_amount: float
@@ -29,11 +29,9 @@ class GoalUserCreateSchema(BaseModel):
     due_date: datetime
     status: GoalStatus = GoalStatus.ACTIVE
 
-
-class GoalGroupCreateSchema(GoalUserCreateSchema):
-    group_id: int
+    account_id: int
 
 
 class GoalUpdateAmountSchema(BaseModel):
-    id: int
+    goal_update_id: int
     contribute_amount: float
