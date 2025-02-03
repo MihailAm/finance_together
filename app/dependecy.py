@@ -2,9 +2,11 @@ import httpx
 from fastapi import Depends, security, Security, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.finance.repository import TransactionRepository, PlannedExpensesRepository, GoalRepository, DebtRepository
+from app.finance.repository import TransactionRepository, PlannedExpensesRepository, GoalRepository, DebtRepository, \
+    GoalContributionsRepository
 from app.finance.repository.category import CategoryRepository
-from app.finance.service import TransactionService, PlannedExpensesService, GoalService, DebtService
+from app.finance.service import TransactionService, PlannedExpensesService, GoalService, DebtService, \
+    GoalContributionsService
 from app.finance.service.category import CategoryService
 from app.groups.repository import GroupMemberRepository, GroupRepository
 from app.groups.service import GroupService
@@ -185,10 +187,12 @@ async def get_goal_repository(
 
 async def get_goal_service(
         goal_repository: GoalRepository = Depends(get_goal_repository),
-        group_member_service: GroupMemberService = Depends(get_group_member_service)
+        group_member_service: GroupMemberService = Depends(get_group_member_service),
+        account_service: AccountService = Depends(get_account_service)
 ) -> GoalService:
     return GoalService(goal_repository=goal_repository,
-                       group_member_service=group_member_service
+                       group_member_service=group_member_service,
+                       account_service=account_service
                        )
 
 
@@ -200,3 +204,19 @@ async def get_debt_repository(
 async def get_debt_service(
         debt_repository: DebtRepository = Depends(get_debt_repository)) -> DebtService:
     return DebtService(debt_repository=debt_repository)
+
+
+async def get_goal_contributions_repository(
+        db_session: AsyncSession = Depends(get_db_session)) -> GoalContributionsRepository:
+    return GoalContributionsRepository(db_session=db_session)
+
+
+async def get_goal_contributions_service(
+        goal_service: GoalService = Depends(get_goal_service),
+        goal_contribution_repository: GoalContributionsRepository = Depends(get_goal_contributions_repository),
+        account_service: AccountService = Depends(get_account_service),
+        group_member_service: GroupMemberService = Depends(get_group_member_service)) -> GoalContributionsService:
+    return GoalContributionsService(goal_service=goal_service,
+                                    goal_contribution_repository=goal_contribution_repository,
+                                    account_service=account_service,
+                                    group_member_service=group_member_service)
