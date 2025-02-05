@@ -4,7 +4,7 @@ from fastapi import APIRouter, status, Depends, HTTPException
 
 from app.dependecy import get_request_user_id, get_goal_contributions_service
 from app.finance.exception import GoalNotFound, AccessDeniedGoal, GoalContribForbidden, GoalContribNotFound
-from app.finance.schema import CreateGoalContributionSchema, ResponseGoalContributionSchema
+from app.finance.schema import CreateGoalContributionSchema, ResponseGoalContributionSchema, UpdateGoalContributionFlag
 from app.finance.service import GoalContributionsService
 from app.groups.exception import UserNotFoundInGroup
 from app.users.exception import AccountNotFound
@@ -120,7 +120,7 @@ async def get_goal_contrib_by_id(goal_contrib_id: int,
               response_model=ResponseGoalContributionSchema,
               status_code=status.HTTP_200_OK)
 async def toggle_is_active_pay(contribution_id: int,
-                               is_active_pay: bool,
+                               is_active_pay_data: UpdateGoalContributionFlag,
                                goal_contributions_service: Annotated[
                                    GoalContributionsService, Depends(get_goal_contributions_service)],
                                user_id: int = Depends(get_request_user_id)):
@@ -128,7 +128,7 @@ async def toggle_is_active_pay(contribution_id: int,
 
     try:
         goal_contrib = await goal_contributions_service.toggle_is_active_pay(contribution_id=contribution_id,
-                                                                             is_active_pay=is_active_pay,
+                                                                             is_active_pay=is_active_pay_data.is_active_pay,
                                                                              user_id=user_id)
         return goal_contrib
     except GoalContribForbidden as e:
