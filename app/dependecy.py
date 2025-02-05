@@ -2,6 +2,7 @@ import httpx
 from fastapi import Depends, security, Security, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.cron.goal import CronJobGoal
 from app.finance.repository import TransactionRepository, PlannedExpensesRepository, GoalRepository, DebtRepository, \
     GoalContributionsRepository
 from app.finance.repository.category import CategoryRepository
@@ -109,9 +110,10 @@ async def get_group_member_repository(db_session: AsyncSession = Depends(get_db_
 async def get_group_member_service(
         group_member_repository: GroupMemberRepository = Depends(get_group_member_repository),
         user_service: UserService = Depends(get_user_service)) -> GroupMemberService:
-    return GroupMemberService(setting=Settings(),
-                              group_member_repository=group_member_repository,
-                              user_profile_service=user_service)
+    return GroupMemberService(
+        group_member_repository=group_member_repository,
+        user_profile_service=user_service
+    )
 
 
 async def get_account_repository(db_session: AsyncSession = Depends(get_db_session)) -> AccountRepository:
@@ -121,8 +123,7 @@ async def get_account_repository(db_session: AsyncSession = Depends(get_db_sessi
 async def get_account_service(
         account_repository: AccountRepository = Depends(get_account_repository),
         group_member_service: GroupMemberService = Depends(get_group_member_service)) -> AccountService:
-    return AccountService(setting=Settings(),
-                          account_repository=account_repository,
+    return AccountService(account_repository=account_repository,
                           group_member_service=group_member_service)
 
 
@@ -155,11 +156,9 @@ async def get_transaction_repository(db_session: AsyncSession = Depends(get_db_s
 
 async def get_transaction_service(
         transaction_repository: TransactionRepository = Depends(get_transaction_repository),
-        group_member_service: GroupMemberService = Depends(get_group_member_service),
         account_service: AccountService = Depends(get_account_service)
 ) -> TransactionService:
     return TransactionService(transaction_repository=transaction_repository,
-                              group_member_service=group_member_service,
                               account_service=account_service
                               )
 
@@ -215,8 +214,13 @@ async def get_goal_contributions_service(
         goal_service: GoalService = Depends(get_goal_service),
         goal_contribution_repository: GoalContributionsRepository = Depends(get_goal_contributions_repository),
         account_service: AccountService = Depends(get_account_service),
-        group_member_service: GroupMemberService = Depends(get_group_member_service)) -> GoalContributionsService:
+        group_member_service: GroupMemberService = Depends(get_group_member_service),
+) -> GoalContributionsService:
     return GoalContributionsService(goal_service=goal_service,
                                     goal_contribution_repository=goal_contribution_repository,
                                     account_service=account_service,
                                     group_member_service=group_member_service)
+
+
+async def get_cron_job_goal() -> CronJobGoal:
+    return CronJobGoal()

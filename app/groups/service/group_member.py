@@ -6,13 +6,12 @@ from app.groups.models.group_member import RoleEnum
 from app.groups.repository import GroupMemberRepository
 from app.groups.schema import GroupMemberSchema, UserGroupResponse, DeleteMemberSchema, AddMemberSchema, \
     ChangeMemberSchema
-from app.settings import Settings
+
 from app.users.service import UserService
 
 
 @dataclass
 class GroupMemberService:
-    setting: Settings
     group_member_repository: GroupMemberRepository
     user_profile_service: UserService
 

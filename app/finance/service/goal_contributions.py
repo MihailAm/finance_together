@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from app.finance.exception import AccessDeniedGoal
+from app.finance.exception import AccessDeniedGoal, GoalContribForbidden, GoalContribNotFound
 from app.finance.repository import GoalContributionsRepository
 from app.finance.schema import CreateGoalContributionSchema, GoalUpdateAmountSchema, ResponseGoalContributionSchema
 from app.finance.service import GoalService
@@ -31,7 +31,8 @@ class GoalContributionsService:
 
         return ResponseGoalContributionSchema.model_validate(new_goal_contrib)
 
-    async def get_goal_contributions_by_user_goal_id(self, goal_id: int, user_id: int) -> List[ResponseGoalContributionSchema]:
+    async def get_goal_contributions_by_user_goal_id(self, goal_id: int, user_id: int) -> List[
+        ResponseGoalContributionSchema]:
         goal = await self.goal_service.get_goal_by_id(goal_id=goal_id)
         account = await self.account_service.get_account_by_anything(account_id=goal.account_id)
 
@@ -44,3 +45,21 @@ class GoalContributionsService:
         goal_contributions = await self.goal_contribution_repository.get_goal_contributions(goal_id=goal_id)
 
         return [ResponseGoalContributionSchema.model_validate(goal_contrib) for goal_contrib in goal_contributions]
+
+    async def get_goal_contrib_by_id(self, goal_contrib_id: int) -> ResponseGoalContributionSchema:
+        goal_contrib = await self.goal_contribution_repository.get_goal_contrib_by_id(goal_contrib_id=goal_contrib_id)
+        if not goal_contrib:
+            raise GoalContribNotFound("Перевод с таким идентификатором не найден")
+        return ResponseGoalContributionSchema.model_validate(goal_contrib)
+
+    async def toggle_is_active_pay(self, contribution_id: int,
+                                   is_active_pay: bool,
+                                   user_id: int) -> ResponseGoalContributionSchema:
+        goal_contrib = await self.get_goal_contrib_by_id(goal_contrib_id=contribution_id)
+        if goal_contrib.user_id != user_id:
+            raise GoalContribForbidden("Вы не можете упралять данной операцией")
+
+        updated_contribution = await self.goal_contribution_repository.update_is_active_pay(goal_contrib_id=contribution_id,
+                                                                                      flag=is_active_pay)
+
+        return ResponseGoalContributionSchema.model_validate(updated_contribution)

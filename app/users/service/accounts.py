@@ -4,7 +4,6 @@ from typing import Optional
 from sqlalchemy.exc import IntegrityError
 
 from app.groups.service.group_member import GroupMemberService
-from app.settings import Settings
 from app.users.exception import AccountNotFound, GroupAccountConflictException, AccountAccessError
 from app.users.repository import AccountRepository
 from app.users.schema import AccountSchema, AccountCreateSchemaUser
@@ -12,7 +11,6 @@ from app.users.schema import AccountSchema, AccountCreateSchemaUser
 
 @dataclass
 class AccountService:
-    setting: Settings
     account_repository: AccountRepository
     group_member_service: GroupMemberService
 

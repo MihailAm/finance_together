@@ -7,7 +7,6 @@ from app.finance.models.transaction import TransactionType
 from app.finance.repository import TransactionRepository
 from app.finance.schema import CreateTransactionSchema, TransactionResponseSchema
 from app.groups.exception import AccessDenied
-from app.groups.service import GroupMemberService
 from app.users.service import AccountService
 
 logging.basicConfig(level=logging.DEBUG)
@@ -17,15 +16,12 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TransactionService:
     transaction_repository: TransactionRepository
-    group_member_service: GroupMemberService
     account_service: AccountService
 
     async def create_transaction(self,
                                  transaction_data: CreateTransactionSchema,
                                  user_id: int) -> TransactionResponseSchema:
         account = await self.account_service.get_account_by_anything(account_id=transaction_data.account_id)
-        if account.group_id:
-            await self.group_member_service.belongs_user_to_group(group_id=account.group_id, user_id=user_id)
 
         if account.user_id:
             if account.user_id != user_id:
