@@ -16,6 +16,7 @@ class PlannedExpensesRepository:
                                       planned_expenses_data: PlannedExpensesCreateSchema,
                                       user_id: int | None) -> PlannedExpenses:
         planned_expenses = PlannedExpenses(
+            name=planned_expenses_data.name,
             amount=planned_expenses_data.amount,
             description=planned_expenses_data.description,
             dur_date=planned_expenses_data.dur_date,

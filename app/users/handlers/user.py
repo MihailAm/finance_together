@@ -23,7 +23,7 @@ async def create_user(body: UserCreateSchema, user_service: Annotated[UserServic
         )
 
 
-@router.get('/{user_id}', response_model=UserSchema)
+@router.get('/{user_id}', response_model=UserSchema,status_code=status.HTTP_200_OK)
 async def find_user_by_id(user_id: int, user_service: Annotated[UserService, Depends(get_user_service)]):
     try:
         new_user = await user_service.get_user(user_id=user_id)

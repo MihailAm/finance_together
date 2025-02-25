@@ -7,10 +7,12 @@ from app.finance.models.planned_expenses import PlannedExpenseType
 
 class PlannedExpensesResponseSchema(BaseModel):
     id: int
+    name: str
     amount: float
     description: str | None
     dur_date: datetime
     type: PlannedExpenseType
+    is_active_pay: bool
     account_id: int
     user_id: int
     category_id: int
@@ -19,6 +21,7 @@ class PlannedExpensesResponseSchema(BaseModel):
 
 
 class PlannedExpensesCreateSchema(BaseModel):
+    name: str
     amount: float
     description: str | None = None
     dur_date: datetime

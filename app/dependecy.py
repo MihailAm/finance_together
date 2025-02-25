@@ -3,6 +3,7 @@ from fastapi import Depends, security, Security, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cron.goal import CronJobGoal
+from app.cron.planned_expenses import CronJobPlannedExpenses
 from app.finance.repository import TransactionRepository, PlannedExpensesRepository, GoalRepository, DebtRepository, \
     GoalContributionsRepository
 from app.finance.repository.category import CategoryRepository
@@ -224,3 +225,7 @@ async def get_goal_contributions_service(
 
 async def get_cron_job_goal() -> CronJobGoal:
     return CronJobGoal()
+
+
+async def get_cron_job_planned_expenses() -> CronJobPlannedExpenses:
+    return CronJobPlannedExpenses()

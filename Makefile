@@ -12,7 +12,7 @@ freeze:
 
 # Запуск FastAPI проекта на порту 8000
 run:
-	uvicorn app.main:app
+	uvicorn app.main:app --host 192.168.56.1
 
 # Создать миграции
 make-migrate:
