@@ -24,7 +24,7 @@ class FinanceTransaction(Base):
 
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("user_profile.id", ondelete="CASCADE"), nullable=False)
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id"), nullable=True)
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id", ondelete="SET NULL"), nullable=True)
 
     account = relationship("Account", back_populates="transactions")
     user = relationship("UserProfile", back_populates="transactions")
