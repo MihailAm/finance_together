@@ -13,7 +13,7 @@ class TransactionResponseSchema(BaseModel):
     type: TransactionType
     account_id: int
     user_id: int
-    category_id: int
+    category_id: int | None
 
     model_config = ConfigDict(from_attributes=True)
 

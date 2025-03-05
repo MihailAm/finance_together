@@ -47,7 +47,7 @@ class GoalRepository:
         query = (
             select(Goal)
             .where(Goal.account.has(group_id=group_id))
-            .order_by(Goal.dur_date.desc())
+            .order_by(Goal.due_date.desc())
 
         )
         async with self.db_session as session:
