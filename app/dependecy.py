@@ -2,11 +2,13 @@ import httpx
 from fastapi import Depends, security, Security, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.cache.accessor import get_redis_connection
 from app.cron.goal import CronJobGoal
 from app.cron.planned_expenses import CronJobPlannedExpenses
 from app.finance.repository import TransactionRepository, PlannedExpensesRepository, GoalRepository, DebtRepository, \
     GoalContributionsRepository
 from app.finance.repository.category import CategoryRepository
+from app.finance.repository.category_cache import CategoryCache
 from app.finance.service import TransactionService, PlannedExpensesService, GoalService, DebtService, \
     GoalContributionsService
 from app.finance.service.category import CategoryService
@@ -144,10 +146,16 @@ async def get_category_repository(db_session: AsyncSession = Depends(get_db_sess
     return CategoryRepository(db_session=db_session)
 
 
+async def get_cache_category_repository() -> CategoryCache:
+    redis = await get_redis_connection()
+    return CategoryCache(redis)
+
+
 async def get_category_service(
-        category_repository: CategoryRepository = Depends(get_category_repository)) -> CategoryService:
-    return CategoryService(setting=Settings(),
-                           category_repository=category_repository,
+        category_repository: CategoryRepository = Depends(get_category_repository),
+        category_cache: CategoryCache = Depends(get_cache_category_repository)) -> CategoryService:
+    return CategoryService(category_repository=category_repository,
+                           category_cache=category_cache
                            )
 
 

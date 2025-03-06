@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     YANDEX_REDIRECT_URI: str
     YANDEX_TOKEN_URL: str
 
+    CACHE_HOST: str
+    CACHE_PORT: str
+    CACHE_DB: str
+
     model_config = ConfigDict(env_file=".local.env")
 
     @property
