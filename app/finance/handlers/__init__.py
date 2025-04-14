@@ -4,10 +4,12 @@ from app.finance.handlers.planned_expenses import router as plan_router
 from app.finance.handlers.goal import router as goal_router
 from app.finance.handlers.debt import router as debt_router
 from app.finance.handlers.goal_contributions import router as goal_contrib_router
+from app.finance.handlers.stats import router as stats_router
 
 __all__ = ["cat_router",
            "trans_router",
            "plan_router",
            "goal_router",
            "debt_router",
-           "goal_contrib_router"]
+           "goal_contrib_router",
+           "stats_router"]

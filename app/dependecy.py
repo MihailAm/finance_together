@@ -6,11 +6,11 @@ from app.cache.accessor import get_redis_connection
 from app.cron.goal import CronJobGoal
 from app.cron.planned_expenses import CronJobPlannedExpenses
 from app.finance.repository import TransactionRepository, PlannedExpensesRepository, GoalRepository, DebtRepository, \
-    GoalContributionsRepository
+    GoalContributionsRepository, StatsRepository
 from app.finance.repository.category import CategoryRepository
 from app.finance.repository.category_cache import CategoryCache
 from app.finance.service import TransactionService, PlannedExpensesService, GoalService, DebtService, \
-    GoalContributionsService
+    GoalContributionsService, StatsService
 from app.finance.service.category import CategoryService
 from app.groups.repository import GroupMemberRepository, GroupRepository
 from app.groups.service import GroupService
@@ -237,3 +237,13 @@ async def get_cron_job_goal() -> CronJobGoal:
 
 async def get_cron_job_planned_expenses() -> CronJobPlannedExpenses:
     return CronJobPlannedExpenses()
+
+
+async def get_stats_repository(db_session: AsyncSession = Depends(get_db_session)) -> StatsRepository:
+    return StatsRepository(db_session=db_session)
+
+
+async def get_stats_service(account_service: AccountService = Depends(get_account_service),
+                            stats_repository: StatsRepository = Depends(get_stats_repository)) -> StatsService:
+    return StatsService(account_service=account_service,
+                        stats_repository=stats_repository)
