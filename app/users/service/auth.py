@@ -30,7 +30,7 @@ class AuthService:
     async def login(self, email: str, password: str) -> UserLoginSchema:
         user = await self.user_repository.get_user_by_email(email)
         if not user:
-            raise UserNotFoundException
+            raise UserNotFoundException("Пользователь не найден")
         if not self.validate_password(password=password, hashed_password=user.password):
             raise UserNotCorrectPasswordException
 

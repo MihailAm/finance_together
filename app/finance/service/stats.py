@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
-from app.finance.exception import TransactionNotFound
+from app.finance.exception import TransactionNotFound, PlannedExpensesNotFound
 from app.finance.repository import StatsRepository
-from app.finance.schema import StatTransactionSchema
+from app.finance.schema import StatTransactionSchema, PlannedExpensesResponseSchema, PlannedExpensesStats
 from app.users.service import AccountService
 
 
@@ -38,3 +38,27 @@ class StatsService:
 
         else:
             raise TransactionNotFound("Некорректные данные аккаунта")
+
+    async def get_planned_expenses(self, account_id: int, user_id: int, dur_date: datetime) -> List[
+        PlannedExpensesStats]:
+
+        account = await self.account_service.get_account_by_anything(account_id=account_id)
+
+        if account.user_id:
+            planned_expenses = await self.stats_repository.get_personal_planned_expenses(
+                account_id=account_id,
+                user_id=user_id,
+                dur_date=dur_date)
+            if not planned_expenses:
+                raise PlannedExpensesNotFound("Плановых операций не найдено")
+            return [PlannedExpensesStats.model_validate(expenses) for expenses in planned_expenses]
+
+        if account.group_id:
+            planned_expenses = await self.stats_repository.get_group_planned_expenses(
+                group_id=account.group_id, dur_date=dur_date)
+            if not planned_expenses:
+                raise PlannedExpensesNotFound("Плановых операций не найдено")
+            return [PlannedExpensesStats.model_validate(expenses) for expenses in planned_expenses]
+
+        else:
+            raise PlannedExpensesNotFound("Некорректные данные аккаунта")

@@ -5,7 +5,7 @@ from app.finance.schema.goal import GoalCreateSchema, GoalResponseSchema, GoalUp
 from app.finance.schema.debt import DebtCreateSchema, DebtResponseSchema, DebtUpdateAmountSchema
 from app.finance.schema.goal_contributions import CreateGoalContributionSchema, ResponseGoalContributionSchema, \
     UpdateGoalContributionFlag
-from app.finance.schema.stats import StatTransactionSchema
+from app.finance.schema.stats import StatTransactionSchema, PlannedExpensesStats
 
 __all__ = ["CategorySchema",
            "OperationCategorySchema",
@@ -22,4 +22,5 @@ __all__ = ["CategorySchema",
            "CreateGoalContributionSchema",
            "ResponseGoalContributionSchema",
            "UpdateGoalContributionFlag",
-           "StatTransactionSchema"]
+           "StatTransactionSchema",
+           "PlannedExpensesStats"]
