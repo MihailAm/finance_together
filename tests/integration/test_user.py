@@ -6,7 +6,7 @@ import asyncio
 @pytest.mark.asyncio
 async def test_login_success():
     async with aiohttp.ClientSession() as session:
-        # Правильные данные пользователя (должны существовать в БД)
+
         login_data = {
             "email": "test2@gmail.com",
             "password": "testTEST2"
@@ -41,9 +41,9 @@ async def test_login_invalid_password():
 async def test_login_validation_error():
     async with aiohttp.ClientSession() as session:
         invalid_data = [
-            {"email": "not-an-email", "password": "string"},  # Невалидный email
-            {"password": "string"},  # Нет email
-            {}  # Пустой запрос
+            {"email": "not-an-email", "password": "string"},
+            {"password": "string"},
+            {}
         ]
 
         for data in invalid_data:
@@ -51,6 +51,6 @@ async def test_login_validation_error():
                     "http://192.168.56.1:8000/auth/login/",
                     json=data
             ) as response:
-                assert response.status == 422  # Ошибка валидации
+                assert response.status == 422
                 error = await response.json()
                 assert "detail" in error
